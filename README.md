@@ -21,8 +21,8 @@ To get started with the calculator frontend, follow these steps:
     ```shell
     npm run serve
 
-## Compiles and minifies for production
-   
+4. Compiles and minifies for production
+ 
     ```shell
     npm run build
 
