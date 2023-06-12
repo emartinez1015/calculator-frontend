@@ -22,8 +22,9 @@ To get started with the calculator frontend, follow these steps:
     npm run serve
 
 ## Compiles and minifies for production
+   
     ```shell
     npm run build
 
-## Live Demo Front-Backend
+## Live Demo FrontEnd
 [Calculator Frontend](http://truenorth-demo-ui.s3-website.us-east-2.amazonaws.com/)
