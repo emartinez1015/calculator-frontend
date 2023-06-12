@@ -20,6 +20,7 @@ To get started with the calculator frontend, follow these steps:
 
     ```shell
     npm run serve
+The server will start running on http://localhost:8081/ 
 
 4. Compiles and minifies for production
  
