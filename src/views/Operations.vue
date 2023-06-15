@@ -18,15 +18,19 @@
                             </div>
                             <!-- Operations Tab -->
                             <b-tab title="Operations" active>
-                                <!-- OperationDisplay Component -->
-                                <OperationDisplay :num1="num1" :num2="num2" :operationValue="operationValue" />
+                                <div style="display: flex; justify-content: center;">
+                                    <div style="padding: 2% 30%;">
+                                        <b-input-group v-if="showInputGroup" size="lg" class="mb-1" >
+                                            <b-form-input  :disabled="showInputSR" style="text-align: center;" placeholder="" type="number" v-model="num1Input"></b-form-input>
+                                            <h1 style="font-size: 1.5vw; padding: 3%">{{ operationValue }}</h1>
+                                            <b-form-input style="text-align: center;" placeholder="" type="number" v-model="num2Input"></b-form-input>
+                                        </b-input-group>
+                                        <h1 v-if="!showInputGroup" style="font-size: 2vw; margin: 0%;">{{ operationValue }}</h1>
+                                    </div>
+                                </div>
                                 <!-- OperationButtons Component -->
                                 <OperationButtons :buttons="buttons" @operator-click="handleOperatorClick" />
-                                <div style="
-                                    align-items: center;
-                                    text-align: center;
-                                    margin: 0 130px 0 130px;
-                                    padding: 3%;">
+                                <div style="align-items: center;text-align: center;margin: 0 130px 0 130px;padding: 3%;">
                                     <!-- b-alert component -->
                                     <b-alert show :variant="variantAlert" style="text-align: center; margin-bottom: 0px">
                                         <h1 style="font-size: 1vw">{{ this.result }}</h1>
@@ -61,7 +65,6 @@
 
 import logic from "@/assets/js/logic";
 import ModalDialog from "@/components/ModalDialog";
-import OperationDisplay from "@/components/OperationDisplay";
 import OperationButtons from "@/components/OperationButtons";
 import ResultDisplay from "@/components/ResultDisplay";
 import RecordsTable from "@/components/RecordsTable";
@@ -71,7 +74,6 @@ import NavBar from "@/components/NavBar";
 export default {
     components: {
         ModalDialog,
-        OperationDisplay,
         OperationButtons,
         ResultDisplay,
         RecordsTable,
@@ -115,6 +117,10 @@ export default {
             variantAlert: "info",
             userName: "",
             userBalance: "",
+            num1Input:"",
+            num2Input:"",
+            showInputGroup: true,
+            showInputSR : false
         };
     },
     methods: {
@@ -142,11 +148,21 @@ export default {
                 operator = opType
                 this.num1 = null;
                 this.num2 = null;
-            } else if (operator === "√") {
+                this.showInputGroup = false
+            } else if (operator === "√" && this.operationValue !="√") {
                 this.tmp_num = this.num1;
                 this.num2 = this.num1;
                 this.num1 = null;
+                this.showInputGroup = true
+            }else{
+                this.showInputGroup = true
+                this.showInputSR = false
             }
+            if(operator === "√"){
+                this.showInputSR = true
+            }
+            this.num1Input = this.num1
+            this.num2Input = this.num2
             this.opString = opType;
             this.operationValue = operator;
             this.operationId = opId;
@@ -169,20 +185,25 @@ export default {
             } catch (error) {
                 this.openModal(error.message);
             }
+            this.num1Input=this.num1
+            this.num2Input=this.num2
             this.showOverlayBtn = !this.showOverlayBtn;
         },
         // Perform calculation
         async calculate() {
+            this.num1 = this.num1Input
+            this.num2 = this.num2Input
             const error_string= "Please generate random value(s) to proceed with the " + this.opString + " operation."
-            if (this.operationValue === "√" && this.num2 === null ){
+            if (this.operationValue === "√" && (this.num2 === null || this.num2 === "")  ){
                 this.resultDisplayHandler(error_string, "warning")
-            } else if (!["√", "Random str"].includes(this.operationValue) && (this.num1 === null && this.num2 === null )) {
+            } else if (!["√", "Random str"].includes(this.operationValue) && ((this.num1 === null || this.num1 === "") && (this.num2 === null || this.num2 === ""))) {
                 this.resultDisplayHandler(error_string, "warning")
-            } else if (!["√", "Random str"].includes(this.operationValue) && (this.num1 === null || this.num2 === null)) {
+            } else if (!["√", "Random str"].includes(this.operationValue) && ((this.num1 === null || this.num1 === "") || (this.num2 === null || this.num2 === ""))) {
                 this.resultDisplayHandler(error_string, "warning")
             } else if (this.operationValue === "?" || this.operationValue === "") {
                 this.resultDisplayHandler("Please select a valid operation.", "warning")
             }else {
+                console.log(this.num1, this.num2, this.operationValue)
                 this.showOverlayBtn = !this.showOverlayBtn;
                 try {
                     if (!this.isArithmetic) {
